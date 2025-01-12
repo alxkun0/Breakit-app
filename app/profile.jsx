@@ -1,12 +1,18 @@
-import { View, Text } from 'react-native'
+import { View, Text, TouchableOpacity, } from 'react-native'
 import React from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context';
+import TopBar from '@/components/TopBar';
 
-const profile = () => {
+
+const profiles = () => {
   return (
-    <View>
-      <Text>profile</Text>
-    </View>
+    <SafeAreaView>
+      <View>
+        <TopBar/>      
+        <Text>Profile Page</Text>
+      </View>
+    </SafeAreaView>
   )
 }
 
-export default profile
+export default profiles

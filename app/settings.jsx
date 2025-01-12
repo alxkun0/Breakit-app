@@ -1,11 +1,16 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View, Text } from 'react-native';
+import React from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import TopBar from '@/components/TopBar';
 
 const settings = () => {
   return (
-    <View>
-      <Text>settings</Text>
-    </View>
+    <SafeAreaView>
+      <View>
+        <TopBar/>    
+        <Text>Settings Page</Text>  
+      </View>
+    </SafeAreaView>
   )
 }
 
