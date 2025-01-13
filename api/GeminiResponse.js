@@ -2,12 +2,12 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const GeminiResponse = async (projectName, projectDescription, timeFrame, skillLevel, maxOutputTokens = 100) => {
   try {
-    const genAI = new GoogleGenerativeAI("AIzaSyBEYyXbovuMN87UIRW6B0DyiRbHR1Tcs94");
+    const genAI = new GoogleGenerativeAI("YOUR_API_KEY");
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // Prompt Construction
     const prompt = `
-      Create step-by-step instructions with short but informative directions including recommended time frame and a note section (Should be a continuing list):
+      Create a task breakdown (strictly output it as a numbered list & make it as short as possible):
       **Project Name:** ${projectName},
       **Project Description:** ${projectDescription},
       **Time Frame:** ${timeFrame},
@@ -17,9 +17,11 @@ const GeminiResponse = async (projectName, projectDescription, timeFrame, skillL
     // Response Generation
     const result = await model.generateContent(prompt, { maxOutputTokens });
 
-    console.log("Full response:", result.response.text());
+    const textResult = result.response.text();
+
+    console.log("Full response:", textResult);
     
-    return result.response.text();  
+    return textResult;  
   } catch (error) {
     console.error("Error generating content:", error.message);
     throw error;
