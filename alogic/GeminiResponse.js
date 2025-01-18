@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const GeminiResponse = async (projectName, projectDescription, timeFrame, skillLevel, maxOutputTokens = 100) => {
   try {
-    const genAI = new GoogleGenerativeAI("AIzaSyBEYyXbovuMN87UIRW6B0DyiRbHR1Tcs94");
+    const genAI = new GoogleGenerativeAI("YOUR_API_KEY");
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // Prompt Construction

@@ -1,30 +1,31 @@
 import { getDatabase, ref, push } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 
-// Firebase Realtime Database function
+// Pass Generated Text to write in Realtime Database (for global access of Tasks)
 const genTextToFB = async (taskTitle, generatedText) => {
   try {
+    // initialize auth and retrieve currently signed-in user
     const auth = getAuth();
     const user = auth.currentUser;
 
     if (user) {
-      // Prepare the data to be stored
+      // prepare the structure of newData for firebaseDB
       const newData = {
         title: taskTitle,
         task: generatedText,
         createdAt: new Date().toISOString(), // Useful for sorting or filtering tasks
       };
 
-      // Reference to the user's tasks in Firebase
+      // get user's Tasks Reference
       const db = getDatabase();
-      const userTasksRef = ref(db, `users/${user.uid}/tasks`);
+      const tasksRef = ref(db, `users/${user.uid}/tasks`);
 
-      // Push new task to Firebase Realtime Database
-      await push(userTasksRef, newData);
+      // push newly generated Tasks to the firebaseDB
+      await push(tasksRef, newData);
 
-      console.log("Task saved to Firebase Realtime Database: ", newData);
+      console.log("Task saved to FirebaseDB: ", newData);
 
-      return newData; // Optionally return the saved data for confirmation
+      return newData; 
 
     } else {
       console.log("User is not authenticated. Task not saved.");

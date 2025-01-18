@@ -9,14 +9,14 @@ const firebaseFetch = async () => {
     if (user) {
       // Get the user's task reference
       const db = getDatabase();
-      const userTasksRef = ref(db, `users/${user.uid}/tasks`);
+      const tasksRef = ref(db, `users/${user.uid}/tasks`);
 
       // Fetch tasks from Firebase
-      const snapshot = await get(userTasksRef);
+      const snap = await get(tasksRef);
 
-      if (snapshot.exists()) {
+      if (snap.exists()) {
         const tasks = [];
-        snapshot.forEach((childSnapshot) => {
+        snap.forEach((childSnapshot) => {
           const task = childSnapshot.val();
           tasks.push({
             id: childSnapshot.key,

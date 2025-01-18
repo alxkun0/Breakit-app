@@ -4,10 +4,10 @@ import { firebase_auth } from "../firebaseConfig";
 // Sign Up
 export const signUp = async (email, password) => {
   try {
-    const userCredential = await createUserWithEmailAndPassword(firebase_auth, email, password);
+    const userCred = await createUserWithEmailAndPassword(firebase_auth, email, password);
     return {
       success: true,
-      user: userCredential.user,
+      user: userCred.user,
     };
   } catch (error) {
     return {
@@ -20,10 +20,10 @@ export const signUp = async (email, password) => {
 // Sign In
 export const signIn = async (email, password) => {
   try {
-    const userCredential = await signInWithEmailAndPassword(firebase_auth, email, password);
+    const userCred = await signInWithEmailAndPassword(firebase_auth, email, password);
     return {
       success: true,
-      user: userCredential.user,
+      user: userCred.user,
     };
   } catch (error) {
     return {
