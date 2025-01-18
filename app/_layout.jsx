@@ -6,9 +6,8 @@ import { Drawer } from 'expo-router/drawer';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DrawerItemList } from '@react-navigation/drawer';
 
-
-
 export default function Layout(){
+
   return(
     <GestureHandlerRootView style={{ flex: 1}}>
       <Drawer
@@ -65,7 +64,7 @@ export default function Layout(){
       >
         
         <Drawer.Screen
-          name='index'
+          name='index/index'
           options={{
             drawerLabel: 'Home',
             drawerIcon: () => (
@@ -100,8 +99,25 @@ export default function Layout(){
           }}
         >
         </Drawer.Screen>
+
+        {/* Hide Unneccessary Routes */}
+        <Drawer.Screen
+          name='index/home'
+          options={{ drawerItemStyle: { display : 'none' } }}
+        ></Drawer.Screen>
+        <Drawer.Screen
+          name='index/TaskPage'
+          options={{ drawerItemStyle: { display : 'none' } }}
+        ></Drawer.Screen>
+        <Drawer.Screen
+          name='index/SignIn'
+          options={{ drawerItemStyle: { display : 'none' } }}
+        ></Drawer.Screen>
+        <Drawer.Screen
+          name='index/SignUp'
+          options={{ drawerItemStyle: { display : 'none' } }}
+        ></Drawer.Screen>
       </Drawer>
     </GestureHandlerRootView>
   );
 }
-
