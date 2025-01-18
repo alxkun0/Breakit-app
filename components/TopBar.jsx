@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import React from 'react';
-import { AntDesign, Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons'; 
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 
 const topBar = () => {
@@ -11,7 +11,9 @@ const topBar = () => {
         {/* Custom Top Bar */}
         <View style={styles.topBar}>
             {/* Drawer Icon */}
-            <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
+            <TouchableOpacity onPress={() => {
+              console.log('Drawer is expanded.')
+              navigation.dispatch(DrawerActions.openDrawer())}}>
               <Ionicons name="menu-outline" size={24} color="#021520" />
             </TouchableOpacity>
 
@@ -38,7 +40,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     top: 0, 
-
+    zIndex: 10,
   },
     // Top bar 
   topBar: {
@@ -54,7 +56,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     fontStyle: 'italic',
-    color: '##021520',
+    color: '#021520',
   },
   iconGroup: {
     flexDirection: 'row',
