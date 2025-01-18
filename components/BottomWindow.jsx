@@ -1,17 +1,22 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions, TextInput, ScrollView } from "react-native";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
-import GeminiResponse from '@/api/GeminiResponse'; 
+import GeminiResponse from '@/alogic/GeminiResponse'; 
+import genTextToFB from '@/alogic/genTextToFB';
 
-const BottomSheet = () => {
+
+const BottomSheet = ({  }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const slideAnimation = useRef(new Animated.Value(0)).current;
-
   
+  // Prompt neccessities
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [timeFrame, setTimeFrame] = useState("");
   const [skillLevel, setSkillLevel] = useState("");
+
+  {/* Bottom Window */}
+  const [isFormValid, setIsFormValid] = useState(false); 
 
   const toggleBottomWindow = () => {
     setIsExpanded((prev) => !prev);
@@ -20,36 +25,55 @@ const BottomSheet = () => {
       duration: 300,
       useNativeDriver: false,
     }).start();
+    console.log("BottomWindow is expanded.");
   };
 
-  const windowHeight = Dimensions.get("window").height * 0.6;
+  const windowHeight = Dimensions.get("window").height * 0.7;
 
   const translateY = slideAnimation.interpolate({
     inputRange: [0, 1],
     outputRange: [windowHeight, 0],
   });
 
-  const handleGenerateContent = async () => {
+  // prevents receiving empty inputs or whitespaces 
+  // disables the generate button until all fields are filled-up
+  useEffect(() => {
+    const isValid = projectName.trim() && projectDescription.trim() && timeFrame.trim() && skillLevel.trim();
+    setIsFormValid(isValid);
+  }, [projectName, projectDescription, timeFrame, skillLevel]);
+
+
+  {/* Text generation from gemini, taskBox creation, writing to firebaseDB*/}
+  const ResponseGeneration = async () => {
     try {
-      const response = await GeminiResponse(projectName, projectDescription, timeFrame, skillLevel);
-      console.log("Generated Response:", response);
+      console.log("Generating Response...");
+      const generatedText = await GeminiResponse(projectName, projectDescription, timeFrame, skillLevel);
+      // log the generatedText to confirm it has contents
+      console.log(generatedText)
 
+      const newTask = await genTextToFB(projectName, generatedText);
+      console.log('Firebase Log:', newTask); 
+      
+
+      console.log("generatedText sent to genTextToJson for processing.");
+
+      // clears the input fields and automatically closes the window
+      setProjectName("");
+      setProjectDescription("");
+      setTimeFrame("");
+      setSkillLevel("");
+      toggleBottomWindow();
     } catch (error) {
-      console.error("Error in generating content:", error);
+      console.error("An error occurred: ", error)
     }
-
-    // Clear the input fields and close the window
-    setProjectName("");
-    setProjectDescription("");
-    setTimeFrame("");
-    setSkillLevel("");
-    toggleBottomWindow();
   };
+
+  
 
   return (
     <View style={styles.container}>
       {/* Floating Add Button */}
-      <View style={styles.bottomBar}>
+      <View style={styles.floatingAddButtonPosition}>
         <TouchableOpacity
           onPress={toggleBottomWindow}
           style={styles.floatingAddButton}
@@ -67,7 +91,7 @@ const BottomSheet = () => {
           onPress={toggleBottomWindow}
           style={{ position: "absolute", top: 15, right: 20 }}
         >
-          <Ionicons name="close" size={30} color="#f5f5f5" />
+          <Ionicons name="close" size={30} color="#FF3B30" />
         </TouchableOpacity>
 
         <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -105,8 +129,12 @@ const BottomSheet = () => {
 
           {/* Submit Button */}
           <TouchableOpacity
-            onPress={handleGenerateContent}
-            style={styles.submitButton}
+            onPress={ResponseGeneration}
+            style={[
+              styles.submitButton,
+              { backgroundColor: isFormValid ? "#4A90E2" : "#A9A9A9" },
+            ]}
+            disabled={!isFormValid}
           >
             <Text style={styles.submitButtonText}>Generate</Text>
           </TouchableOpacity>
@@ -121,8 +149,8 @@ export default BottomSheet;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'flex-end', // Ensures bottom sheet appears at the bottom
+    backgroundColor: 'transparent',
+    zIndex: 10,
   },
 
   text: {
@@ -134,79 +162,75 @@ const styles = StyleSheet.create({
   },
   floatingAddButton: {
     position: 'absolute',
-    bottom: 35,
+    bottom: 20,
     left: '50%',
     transform: [{ translateX: -30 }],
     width: 65,
     height: 65,
     borderRadius: 50,
-    backgroundColor: '#021520',
+    backgroundColor: "#4A90E2",
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
+    elevation: 8,
+    
   },
-
-  // Bottom Sheet
-  bottomBar: {
+  floatingAddButtonPosition: {
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
   },
+
+    // Bottom Sheet
   bottomWindow: {
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    height: '120%',
-    backgroundColor: '#021520',
-    borderTopEndRadius: 40,
-    borderTopLeftRadius: 40,
-    elevation: 5,
+    height: Dimensions.get('window').height * 0.65,
+    backgroundColor: "#ffffff",
+    borderTopEndRadius: 20,
+    borderTopLeftRadius: 20,
+    elevation: 8,
     padding: 20,
   },
   scrollContent: {
-    paddingBottom: 100,
+    paddingBottom: 2,
   },
   bottomWindowTitle: {
-    color: '#f5f5f5',
-    fontSize: 20,
-    fontWeight: 'bold',
+    color: "#333333",
+    fontSize: 22,
+    fontWeight: '600',
     textAlign: 'center',
     marginBottom: 15,
   },
   bottomWindowText: {
-    color: '#f5f5f5',
+    color: '#333333',
     fontSize: 18,
     fontWeight: 'light',
     textAlign: 'left',
     flexDirection: 'row',
-    marginBottom: 10,
+    marginBottom: 5,
   },
   bottomWindowTextInput: {
     width: '100%',
     height: 40,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 5,
+    backgroundColor: "#F7F8FA",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 10,
     paddingHorizontal: 10,
     marginBottom: 20,
+    fontSize: 16,
   },
   submitButton: {
-    backgroundColor: '#021520',
+    backgroundColor: "#4A90E2",
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 10,
     alignItems: 'center',
+    elevation: 1,
   },
   submitButtonText: {
     color: '#fff',
     fontSize: 18,
+    fontWeight: "600",
   },
 });
