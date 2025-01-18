@@ -11,12 +11,12 @@ const Home = () => {
   const navigation = useNavigation();
   const [tasks, setTasks] = useState([]);
 
-  // Fetching tasks when the component mounts
+  // utilizes firebaseFetch
   useEffect(() => {
     const getTasks = async () => {
       try {
-        const tasksFromFirebase = await firebaseFetch();
-        setTasks(tasksFromFirebase); // Set fetched tasks in state
+        const userTasks = await firebaseFetch();
+        setTasks(userTasks); // Set fetched tasks in state
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
